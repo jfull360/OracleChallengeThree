@@ -1,10 +1,12 @@
 package com.alura.foro.services;
 
+import com.alura.foro.entities.Topicos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.alura.foro.repositories.TopicosRepository;
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 /**
  *
@@ -14,13 +16,23 @@ import java.util.Optional;
 public class TopicosService {
 
     @Autowired
-    private final TopicosRepository repository;
+    private TopicosRepository repository;
 
-    public TopicosService(TopicosRepository r) {
-        this.repository = r;
+    public void saveTopico(Topicos t) { //create // update
+        repository.save(t);
     }
 
-    public void deleteHuesped(Long id) {
+    public void deleteTopico(Long id) { //delete
         repository.deleteById(id);
     }
+    
+    public Optional<Topicos> getTopico(Long id) {
+        return repository.findById(id);
+    }
+    
+    public Page<Topicos> getAllTopics(Integer elements, Integer pagina) { // get ALL 
+        return repository.findAll(PageRequest.of(0, 20));
+    }
+    
+    
 }
