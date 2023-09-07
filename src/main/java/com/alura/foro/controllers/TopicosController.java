@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,8 +50,8 @@ public class TopicosController {
         }
         HttpStatus httpStatus = flag ? HttpStatus.CREATED : HttpStatus.OK;
         response.put("status", httpStatus.value());
-        response.put("message", (flag) ? "Topico guardado correctamente"
-                : "Ocurrio un problema inesperado al momento de guardar. " + message);
+        response.put("message", (flag) ? "Tópico guardado correctamente"
+                : "Ocurrió un problema inesperado al momento de guardar. " + message);
         return new ResponseEntity<>(response, httpStatus);
 
     }
@@ -62,11 +63,11 @@ public class TopicosController {
         response.put("status", (!getAllTopics.isEmpty()) ? HttpStatus.ACCEPTED.value() : HttpStatus.OK.value());
         response.put("data", (!getAllTopics.isEmpty() && getAllTopics.getNumberOfElements() > 0) ? getAllTopics : null);
         if (getAllTopics.isEmpty()) {
-            response.put("message", "No existen topicos registrados.");
+            response.put("message", "No existen tópicos registrados.");
         }
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-    
+
     @GetMapping("/gettopicbyid/{idtopic}")
     public ResponseEntity<?> getTopicById(@PathVariable("idtopic") Long idTopic) {
         response.clear();
@@ -74,11 +75,35 @@ public class TopicosController {
         response.put("status", (!getSpecificTopic.isEmpty()) ? HttpStatus.ACCEPTED.value() : HttpStatus.OK.value());
         response.put("data", (!getSpecificTopic.isEmpty()) ? getSpecificTopic : null);
         if (getSpecificTopic.isEmpty()) {
-            response.put("message", "No existe un topico registrado con ese ID.");
+            response.put("message", "No existe un tópico registrado con ese ID.");
         }
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-    
+
+    @PutMapping("/update/{idtopic}")
+    public ResponseEntity<?> updateTopicById(@PathVariable("idtopic") Long idTopic, @RequestBody @Valid Topicos t) {
+        response.clear();
+        boolean flag = true;
+        String message = "";
+        Optional<Topicos> topicFound = topicosS.getTopicById(idTopic);
+        if (topicFound.isEmpty()) {
+            message = "No se pudo actualizar, debido a que no se encontró un tópico con ese ID.";
+            flag = false;
+        } else {
+            try {
+                t.setId(topicFound.get().getId());
+                topicosS.saveTopico(t);
+            } catch (Exception e) {
+                flag = false;
+                message = e.getMessage();
+            }
+        }
+        HttpStatus httpStatus = flag ? HttpStatus.CREATED : HttpStatus.OK;
+        response.put("status", httpStatus.value());
+        response.put("message", (flag) ? "Tópico actualizado correctamente"
+                : "Ocurrió un problema inesperado al momento de actualizar. " + message);
+        return new ResponseEntity<>(response, httpStatus);
+    }
 
     @DeleteMapping("/delete/{idtopic}")
     public ResponseEntity<?> deleteTopic(@PathVariable("idtopic") Long idTopic) {
@@ -93,8 +118,8 @@ public class TopicosController {
         }
         HttpStatus httpStatus = flag ? HttpStatus.CREATED : HttpStatus.OK;
         response.put("status", httpStatus.value());
-        response.put("message", (flag) ? "Topico eliminado exitosamente."
-                : "Ocurrio un problema inesperado al momento de eliminar el topico. " + message);
+        response.put("message", (flag) ? "Tópico eliminado exitosamente."
+                : "Ocurrió un problema inesperado al momento de eliminar el tópico . " + message);
         return new ResponseEntity<>(response, httpStatus);
     }
 
