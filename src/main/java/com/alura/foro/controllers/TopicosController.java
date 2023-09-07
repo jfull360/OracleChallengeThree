@@ -9,6 +9,7 @@ import com.alura.foro.services.TopicosService;
 import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -33,10 +34,11 @@ public class TopicosController {
 
     @Autowired
     TopicosService topicosS;
+    Map<String, Object> response = new HashMap<>();
 
     @PostMapping("/save")
     public ResponseEntity<?> saveTopico(@RequestBody @Valid Topicos t) {
-        Map<String, Object> response = new HashMap<>();
+        response.clear();
         boolean flag = true;
         String message = "";
         try {
@@ -55,7 +57,7 @@ public class TopicosController {
 
     @GetMapping("/getAll/page/{pagina}/elements/{elements}")
     public ResponseEntity<?> getAllTopics(@PathVariable("elements") Integer elements, @PathVariable("pagina") Integer pagina) {
-        Map<String, Object> response = new HashMap<>();
+        response.clear();
         Page<Topicos> getAllTopics = topicosS.getAllTopics(elements, pagina);
         response.put("status", (!getAllTopics.isEmpty()) ? HttpStatus.ACCEPTED.value() : HttpStatus.OK.value());
         response.put("data", (!getAllTopics.isEmpty() && getAllTopics.getNumberOfElements() > 0) ? getAllTopics : null);
@@ -64,10 +66,23 @@ public class TopicosController {
         }
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+    
+    @GetMapping("/gettopicbyid/{idtopic}")
+    public ResponseEntity<?> getTopicById(@PathVariable("idtopic") Long idTopic) {
+        response.clear();
+        Optional<Topicos> getSpecificTopic = topicosS.getTopicById(idTopic);
+        response.put("status", (!getSpecificTopic.isEmpty()) ? HttpStatus.ACCEPTED.value() : HttpStatus.OK.value());
+        response.put("data", (!getSpecificTopic.isEmpty()) ? getSpecificTopic : null);
+        if (getSpecificTopic.isEmpty()) {
+            response.put("message", "No existe un topico registrado con ese ID.");
+        }
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+    
 
     @DeleteMapping("/delete/{idtopic}")
     public ResponseEntity<?> deleteTopic(@PathVariable("idtopic") Long idTopic) {
-        Map<String, Object> response = new HashMap<>();
+        response.clear();
         boolean flag = true;
         String message = "";
         try {

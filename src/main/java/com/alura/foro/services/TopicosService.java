@@ -26,7 +26,7 @@ public class TopicosService {
         repository.deleteById(id);
     }
     
-    public Optional<Topicos> getTopico(Long id) {
+    public Optional<Topicos> getTopicById(Long id) {
         return repository.findById(id);
     }
     
