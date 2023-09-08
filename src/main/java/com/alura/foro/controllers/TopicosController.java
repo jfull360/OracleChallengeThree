@@ -87,7 +87,7 @@ public class TopicosController {
     @PutMapping("/update/{idtopic}")
     public ResponseEntity<?> updateTopicById(@PathVariable("idtopic") Long idTopic, @RequestBody @Valid Topicos t) {
         response.clear();
-        boolean flag = topicosS.checkIfExistsByTitleMessage(t.getTitulo(), t.getMensaje());
+        boolean flag = topicosS.checkIfExistsByTitleMessageUpdate(idTopic,t.getTitulo(), t.getMensaje());
         String message = "";
         Optional<Topicos> topicFound = topicosS.getTopicById(idTopic);
         if (topicFound.isEmpty()) {

@@ -26,18 +26,27 @@ public class TopicosService {
     public void deleteTopico(Long id) { //delete
         repository.deleteById(id);
     }
-    
+
     public Optional<Topicos> getTopicById(Long id) {
         return repository.findById(id);
     }
-    
+
     public Page<Topicos> getAllTopics(Integer elements, Integer pagina) { // get ALL 
         return repository.findAll(PageRequest.of(0, 20));
     }
-    
-    public boolean checkIfExistsByTitleMessage(String titulo, String mensaje){
+
+    public boolean checkIfExistsByTitleMessage(String titulo, String mensaje) {
         List<Topicos> checkIfExistsByTitleMessage = repository.checkIfExistsByTitleMessage(titulo, mensaje);
         return checkIfExistsByTitleMessage.isEmpty();
     }
-    
+
+    public boolean checkIfExistsByTitleMessageUpdate(Long id, String titulo, String mensaje) {
+        List<Topicos> checkIfExistsByTitleMessage = repository.checkIfExistsByTitleMessage(titulo, mensaje);
+        if (checkIfExistsByTitleMessage.isEmpty() || checkIfExistsByTitleMessage.get(0).getId() == id) {
+            //If exists we need to know IF it´s the same TOPIC
+            return true;
+        }
+        return false;
+    }
+
 }

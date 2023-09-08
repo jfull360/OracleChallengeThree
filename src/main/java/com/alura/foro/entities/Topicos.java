@@ -1,5 +1,6 @@
 package com.alura.foro.entities;
 
+import com.alura.foro.modelo.StatusTopico;
 import java.io.Serializable;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -8,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.Data;
 
 /**
@@ -33,10 +35,10 @@ public class Topicos implements Serializable {
     private String mensaje;
     @Basic(optional = false)
     @Column(name = "fecha_creacion")
-    private String fechaCreacion;
+    private LocalDateTime fechaCreacion = LocalDateTime.now();
     @Basic(optional = false)
     @Column(name = "estatus")
-    private String estatus;
+    private StatusTopico estatus = StatusTopico.NO_RESPONDIDO;
     @Basic(optional = false)
     @Column(name = "autor")
     private String autor;
