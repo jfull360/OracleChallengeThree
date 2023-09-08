@@ -4,6 +4,7 @@ import com.alura.foro.entities.Topicos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.alura.foro.repositories.TopicosRepository;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,5 +35,9 @@ public class TopicosService {
         return repository.findAll(PageRequest.of(0, 20));
     }
     
+    public boolean checkIfExistsByTitleMessage(String titulo, String mensaje){
+        List<Topicos> checkIfExistsByTitleMessage = repository.checkIfExistsByTitleMessage(titulo, mensaje);
+        return checkIfExistsByTitleMessage.isEmpty();
+    }
     
 }

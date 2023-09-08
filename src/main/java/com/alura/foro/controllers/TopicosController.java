@@ -36,22 +36,26 @@ public class TopicosController {
     @Autowired
     TopicosService topicosS;
     Map<String, Object> response = new HashMap<>();
+    String foundMessage = "Se encontro un topico con titulo o mensaje repetido.";
+    String errorMessage = "Ocurrió un problema inesperado al momento de ";
 
     @PostMapping("/save")
     public ResponseEntity<?> saveTopico(@RequestBody @Valid Topicos t) {
         response.clear();
-        boolean flag = true;
         String message = "";
-        try {
-            topicosS.saveTopico(t);
-        } catch (Exception e) {
-            flag = false;
-            message = e.getMessage();
+        boolean flag = topicosS.checkIfExistsByTitleMessage(t.getTitulo(), t.getMensaje());
+        if (flag) {
+            try {
+                topicosS.saveTopico(t);
+            } catch (Exception e) {
+                flag = false;
+                message = e.getMessage();
+            }
         }
         HttpStatus httpStatus = flag ? HttpStatus.CREATED : HttpStatus.OK;
         response.put("status", httpStatus.value());
         response.put("message", (flag) ? "Tópico guardado correctamente"
-                : "Ocurrió un problema inesperado al momento de guardar. " + message);
+                : errorMessage + "guardar." + " O " + foundMessage + message);
         return new ResponseEntity<>(response, httpStatus);
 
     }
@@ -83,13 +87,13 @@ public class TopicosController {
     @PutMapping("/update/{idtopic}")
     public ResponseEntity<?> updateTopicById(@PathVariable("idtopic") Long idTopic, @RequestBody @Valid Topicos t) {
         response.clear();
-        boolean flag = true;
+        boolean flag = topicosS.checkIfExistsByTitleMessage(t.getTitulo(), t.getMensaje());
         String message = "";
         Optional<Topicos> topicFound = topicosS.getTopicById(idTopic);
         if (topicFound.isEmpty()) {
             message = "No se pudo actualizar, debido a que no se encontró un tópico con ese ID.";
             flag = false;
-        } else {
+        } else if (flag) {
             try {
                 t.setId(topicFound.get().getId());
                 topicosS.saveTopico(t);
@@ -101,7 +105,7 @@ public class TopicosController {
         HttpStatus httpStatus = flag ? HttpStatus.CREATED : HttpStatus.OK;
         response.put("status", httpStatus.value());
         response.put("message", (flag) ? "Tópico actualizado correctamente"
-                : "Ocurrió un problema inesperado al momento de actualizar. " + message);
+                : errorMessage + "actualizar." + " O " + foundMessage + message);
         return new ResponseEntity<>(response, httpStatus);
     }
 
@@ -119,7 +123,7 @@ public class TopicosController {
         HttpStatus httpStatus = flag ? HttpStatus.CREATED : HttpStatus.OK;
         response.put("status", httpStatus.value());
         response.put("message", (flag) ? "Tópico eliminado exitosamente."
-                : "Ocurrió un problema inesperado al momento de eliminar el tópico . " + message);
+                : errorMessage + " eliminar el tópico . " + message);
         return new ResponseEntity<>(response, httpStatus);
     }
 
